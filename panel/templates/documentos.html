@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% block contenido %}
+{% if mensaje %}
+<p class="exito" role="status">{{ mensaje }}</p>
+{% endif %}
+
+<nav class="resumen" aria-label="Filtrar documentos por estado">
+  <a class="tarjeta-resumen{% if not filtro %} activo{% endif %}" href="/documentos"{% if not filtro %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.total }}</span>
+    <span class="etiqueta">{{ icono('lista') }} Todos</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'verificado' %} activo{% endif %}" href="/documentos?estado=verificado"{% if filtro == 'verificado' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.verificado }}</span>
+    <span class="etiqueta">{{ icono('verificado') }} Verificados</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'borrador' %} activo{% endif %}" href="/documentos?estado=borrador"{% if filtro == 'borrador' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.borrador }}</span>
+    <span class="etiqueta">{{ icono('borrador') }} Borradores</span>
+  </a>
+</nav>
+
+<div class="barra-lista">
+  <p class="ayuda">Manuales, guías y folletos de turismo. Solo los documentos verificados los usa el asistente, y solo para contar historias, tradiciones y cultura: nunca para accesibilidad, horarios, precios, direcciones ni fechas.</p>
+  <a class="boton" href="/documentos/nuevo">{{ icono('mas') }} Subir documento</a>
+</div>
+
+{% if documentos %}
+<div class="tabla-contenedor" role="region" aria-label="Tabla de documentos" tabindex="0">
+  <table>
+    <caption>Documentos ({{ documentos|length }})</caption>
+    <thead>
+      <tr>
+        <th scope="col">Título</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Tema</th>
+        <th scope="col">Fragmentos</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in documentos %}
+      <tr>
+        <th scope="row">{{ d.titulo }}</th>
+        <td>{{ d.tipo }}</td>
+        <td>{{ d.tema or '—' }}</td>
+        <td>{{ d.fragmentos }}</td>
+        <td>
+          <span class="insignia insignia-{{ d.estado }}">
+            {{ icono('verificado' if d.estado == 'verificado' else 'borrador') }} {{ d.estado|capitalize }}
+          </span>
+        </td>
+        <td>
+          <a class="enlace-icono" href="/documentos/{{ d.id }}">
+            {{ icono('documento') }} Ver<span class="solo-lectores"> {{ d.titulo }}</span>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="tarjeta vacio" role="status">
+  <p><strong>Todavía no hay documentos.</strong></p>
+  <p>Empieza con «Subir documento».</p>
+</div>
+{% endif %}
+{% endblock %}

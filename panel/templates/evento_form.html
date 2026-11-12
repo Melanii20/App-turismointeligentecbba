@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{# Campo de una línea con su etiqueta y su mensaje de error #}
+{% macro campo(nombre, etiqueta, obligatorio=False, ayuda=None, tipo="text") %}
+<p>
+  <label for="{{ nombre }}">{{ etiqueta }}{% if obligatorio %} (obligatorio){% endif %}</label>
+  {% if ayuda %}<span class="ayuda" id="ayuda-{{ nombre }}">{{ ayuda }}</span>{% endif %}
+  {% if errores.get(nombre) %}<span class="error-campo" id="error-{{ nombre }}">{{ errores[nombre] }}</span>{% endif %}
+  <input type="{{ tipo }}" id="{{ nombre }}" name="{{ nombre }}" value="{{ v.get(nombre, '') }}"
+         {% if obligatorio %}required{% endif %}
+         {% if errores.get(nombre) %}aria-invalid="true"{% endif %}
+         aria-describedby="{% if ayuda %}ayuda-{{ nombre }} {% endif %}{% if errores.get(nombre) %}error-{{ nombre }}{% endif %}">
+</p>
+{% endmacro %}
+
+{% block contenido %}
+{% if errores %}
+<div class="error" role="alert">
+  <p>No se guardó el evento. Corrige {{ errores|length }} campo{{ 's' if errores|length > 1 }}:</p>
+  <ul>
+    {% for campo, mensaje in errores.items() %}
+    <li><a href="#{{ campo }}">{{ mensaje }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<form method="post" action="{{ accion }}" class="formulario">
+  <section class="tarjeta" aria-labelledby="titulo-datos-evento">
+    <h2 id="titulo-datos-evento">{{ icono('calendario') }} Datos del evento</h2>
+    {{ campo("nombre", "Nombre", obligatorio=True) }}
+
+    {% set tipo_actual = v.get('tipo', '') %}
+    <p>
+      <label for="tipo">Tipo</label>
+      {% if errores.get('tipo') %}<span class="error-campo" id="error-tipo">{{ errores['tipo'] }}</span>{% endif %}
+      <select id="tipo" name="tipo">
+        <option value="" {% if not tipo_actual %}selected{% endif %}>Sin tipo</option>
+        {% for t in tipos %}
+        <option value="{{ t }}" {% if tipo_actual == t %}selected{% endif %}>{{ t|capitalize }}</option>
+        {% endfor %}
+      </select>
+    </p>
+
+    <div class="fila-doble">
+      {{ campo("fecha_inicio", "Fecha de inicio", obligatorio=True, tipo="date") }}
+      {{ campo("fecha_fin", "Fecha de fin", ayuda="Déjala en blanco si el evento dura un solo día.", tipo="date") }}
+    </div>
+
+    <div class="fila-doble">
+      {{ campo("hora_inicio", "Hora de inicio", ayuda="Opcional. Ejemplo: 09:00.", tipo="time") }}
+      {{ campo("hora_fin", "Hora de fin", ayuda="Opcional. Ejemplo: 18:00.", tipo="time") }}
+    </div>
+
+    {{ campo("zona", "Zona", ayuda="Barrio, plaza o municipio donde ocurre. Ejemplo: Plaza 14 de Septiembre.") }}
+
+    <div class="fila-doble">
+      {{ campo("latitud", "Latitud", ayuda="Opcional. En Google Maps: clic derecho en el mapa y copia las coordenadas. Ejemplo: -17.393800.") }}
+      {{ campo("longitud", "Longitud", ayuda="Opcional. Ejemplo: -66.156900.") }}
+    </div>
+
+    <p>
+      <label for="descripcion">Descripción</label>
+      {% if errores.get('descripcion') %}<span class="error-campo" id="error-descripcion">{{ errores['descripcion'] }}</span>{% endif %}
+      <textarea id="descripcion" name="descripcion" rows="5">{{ v.get('descripcion', '') }}</textarea>
+    </p>
+  </section>
+
+  <div class="acciones" role="group" aria-label="Guardar el evento">
+    <button type="submit">{{ icono('guardar') }} {{ boton }}</button>
+    <a class="boton secundario" href="/eventos?cuando=todos">{{ icono('cerrar') }} Cancelar</a>
+  </div>
+</form>
+
+{% if evento_id %}
+<section class="tarjeta" aria-labelledby="titulo-eliminar">
+  <h2 id="titulo-eliminar">{{ icono('cerrar') }} Eliminar evento</h2>
+  <p>Si el evento ya no va a ocurrir, puedes eliminarlo. No se puede deshacer.</p>
+  <form method="post" action="/eventos/{{ evento_id }}/eliminar"
+        onsubmit="return confirm('¿Eliminar este evento? No se puede deshacer.');">
+    <button type="submit" class="secundario">{{ icono('cerrar') }} Eliminar evento</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

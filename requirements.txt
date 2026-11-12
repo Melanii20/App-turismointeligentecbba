@@ -1,0 +1,21 @@
+# Referencia de todas las dependencias del proyecto (cada servicio tiene el suyo):
+#   asistente/requirements.txt  -> backend del asistente (imagen tesis-asistente)
+#   panel/requirements.txt      -> panel de administración (imagen tesis-panel)
+# Todo el Python se ejecuta en Docker, nunca con el venv local.
+fastapi
+uvicorn
+jinja2
+python-multipart
+itsdangerous
+bcrypt
+psycopg2-binary
+pgvector
+sentence-transformers
+httpx
+slowapi
+pytest
+python-telegram-bot
+pydantic-ai-slim[google]
+tavily-python
+pypdf
+python-docx

@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+psycopg2-binary
+pgvector
+sentence-transformers
+httpx
+slowapi
+pytest
+python-telegram-bot
+pydantic-ai-slim[google]
+tavily-python
+pypdf
+python-docx

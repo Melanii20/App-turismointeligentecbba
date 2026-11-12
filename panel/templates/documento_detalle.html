@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% block contenido %}
+{% if mensaje %}<p class="exito" role="status">{{ mensaje }}</p>{% endif %}
+{% if error %}<div class="error" role="alert"><p>{{ error }}</p></div>{% endif %}
+
+<section class="tarjeta" aria-labelledby="titulo-ficha">
+  <h2 id="titulo-ficha">{{ icono('documento') }} Ficha</h2>
+  <dl>
+    <dt>Estado</dt>
+    <dd><span class="insignia insignia-{{ doc.estado }}">{{ icono('verificado' if doc.estado == 'verificado' else 'borrador') }} {{ doc.estado|capitalize }}</span>
+      {% if doc.fecha_verificacion %} (verificado el {{ doc.fecha_verificacion.strftime('%d/%m/%Y') }}){% endif %}</dd>
+    <dt>Tipo</dt><dd>{{ doc.tipo }}</dd>
+    <dt>Tema</dt><dd>{{ doc.tema or '—' }}</dd>
+    <dt>Institución o autor</dt><dd>{{ doc.institucion_autor or '—' }}</dd>
+    <dt>Año</dt><dd>{{ doc.anio or '—' }}</dd>
+    <dt>URL de origen</dt><dd>{{ doc.url_origen or '—' }}</dd>
+    <dt>Permiso de uso</dt><dd>{{ doc.permiso_uso }}</dd>
+    <dt>Archivo</dt><dd>{{ doc.archivo or '—' }}</dd>
+  </dl>
+  <div class="acciones" role="group" aria-label="Acciones del documento">
+    {% if doc.estado != 'verificado' %}
+    <form method="post" action="/documentos/{{ doc.id }}/verificar" class="en-linea">
+      <button type="submit">{{ icono('verificado') }} Verificar documento</button>
+    </form>
+    {% endif %}
+    <a class="boton secundario" href="/documentos/{{ doc.id }}/editar">{{ icono('editar') }} Editar o reemplazar</a>
+    <a class="boton secundario" href="/documentos/{{ doc.id }}/eliminar">{{ icono('cerrar') }} Eliminar</a>
+    <a class="boton secundario" href="/documentos">{{ icono('lista') }} Volver a la lista</a>
+  </div>
+  {% if doc.estado != 'verificado' %}
+  <p class="ayuda">Mientras esté en borrador, el asistente no lo usa. Revisa los fragmentos de abajo antes de verificarlo.</p>
+  {% endif %}
+</section>
+
+<section class="tarjeta" aria-labelledby="titulo-fragmentos">
+  <h2 id="titulo-fragmentos">{{ icono('lista') }} Vista previa de fragmentos ({{ fragmentos|length }})</h2>
+  <ol>
+    {% for f in fragmentos %}
+    <li>
+      <p><strong>Fragmento {{ f.numero }}{% if f.pagina %}, página {{ f.pagina }}{% endif %}</strong></p>
+      <p>{{ f.texto }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}

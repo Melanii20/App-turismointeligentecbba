@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% block contenido %}
+{% if mensaje %}
+<p class="exito" role="status">{{ mensaje }}</p>
+{% endif %}
+
+{# Resumen: cada tarjeta es también un filtro por estado #}
+<nav class="resumen" aria-label="Filtrar sitios por estado">
+  <a class="tarjeta-resumen{% if not filtro %} activo{% endif %}" href="{{ enlaces.todos }}"{% if not filtro %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.total }}</span>
+    <span class="etiqueta">{{ icono('lista') }} Todos</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'verificado' %} activo{% endif %}" href="{{ enlaces.verificado }}"{% if filtro == 'verificado' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.verificado }}</span>
+    <span class="etiqueta">{{ icono('verificado') }} Verificados</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'borrador' %} activo{% endif %}" href="{{ enlaces.borrador }}"{% if filtro == 'borrador' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.borrador }}</span>
+    <span class="etiqueta">{{ icono('borrador') }} Borradores</span>
+  </a>
+</nav>
+
+<div class="barra-lista">
+  <form method="get" action="/sitios" role="search" class="buscador">
+    <label for="q">Buscar por nombre</label>
+    <div class="buscador-fila">
+      <input type="search" id="q" name="q" value="{{ q }}" maxlength="100" autocomplete="off">
+      {% if filtro %}<input type="hidden" name="estado" value="{{ filtro }}">{% endif %}
+      <button type="submit">{{ icono('buscar') }} Buscar</button>
+      {% if q or filtro %}<a class="boton secundario" href="/sitios">{{ icono('cerrar') }} Quitar filtros</a>{% endif %}
+    </div>
+  </form>
+  <a class="boton" href="/sitios/nuevo">{{ icono('mas') }} Nuevo sitio</a>
+</div>
+
+{% if sitios %}
+<div class="tabla-contenedor" role="region" aria-label="Tabla de sitios turísticos" tabindex="0">
+  <table>
+    <caption>
+      {% if q or filtro %}Mostrando {{ sitios|length }} de {{ conteos.total }} sitios{% else %}Sitios turísticos registrados ({{ sitios|length }}){% endif %}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sitio in sitios %}
+      <tr>
+        <th scope="row">{{ sitio.nombre }}</th>
+        <td>{{ sitio.tipo }}</td>
+        <td>
+          <span class="insignia insignia-{{ sitio.estado }}">
+            {{ icono('verificado' if sitio.estado == 'verificado' else 'borrador') }} {{ sitio.estado|capitalize }}
+          </span>
+        </td>
+        <td>
+          <a class="enlace-icono" href="/sitios/{{ sitio.id }}/editar">
+            {{ icono('editar') }} Editar<span class="solo-lectores"> {{ sitio.nombre }}</span>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% elif q or filtro %}
+<div class="tarjeta vacio" role="status">
+  <p><strong>Ningún sitio coincide con tu búsqueda.</strong></p>
+  <p>Prueba con otro nombre o <a href="/sitios">quita los filtros</a>.</p>
+</div>
+{% else %}
+<div class="tarjeta vacio">
+  <p><strong>Todavía no hay sitios registrados.</strong></p>
+  <p>Empieza con «Nuevo sitio».</p>
+</div>
+{% endif %}
+{% endblock %}

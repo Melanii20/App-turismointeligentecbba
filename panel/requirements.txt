@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+psycopg2-binary
+bcrypt
+itsdangerous
+pgvector
+sentence-transformers
+pypdf
+python-docx
+pytest

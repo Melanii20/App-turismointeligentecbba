@@ -1,0 +1,66 @@
+flowchart TD
+    A(["Pregunta por voz, texto o Telegram + contexto + ubicación opcional"]) --> B["1 · Normalizar texto"]
+    B --> C{"2 · Router por reglas"}
+    C -->|sin coincidencia| D["2b · agente_clasificador (Gemini): intención + tipo de dato + sitio"]
+    C -->|coincide| F{"3 · Intención y tipo de dato: operativo o narrativo"}
+    D --> F
+    D -.->|sin LLM o con error: se prueba el RAG| N1
+    F -->|confirmacion: sí / no| K["Ejecuta o cancela la acción pendiente"]
+    F -->|mas_informacion, o sí a ¿Quieres saber más?| SM["agente_saberes desde N2, solo la parte narrativa"]
+    F -->|ayuda| R2["Qué puedo preguntar"]
+    F -->|fuera_de_alcance| R1["Mensaje de alcance"]
+    F -->|no clara| Z["Pregunta aclaratoria"]
+    F -->|compartir| T5["especialista compartir: armar_mensaje_compartir"] --> P1["Plantilla"]
+    F -->|itinerario| T7["especialista itinerario: armar_itinerario"] --> P1
+    F -->|eventos| T1["especialista eventos: eventos_por_fecha"] --> P1
+    F -->|cercania| T3["sitios_cercanos"] --> P1
+    F -->|datos_practicos / como_llegar| LN{"¿Nombra un lugar que no está en la base?"}
+    F -->|informacion| LN
+    F -->|saberes| N1
+    LN -->|no es de Cochabamba| R5["No tengo información sobre el lugar. Puedo contarte de los de Cochabamba que tengo"]
+    LN -->|de Cochabamba, dato operativo| R6["No tengo datos verificados del lugar"]
+    LN -->|de Cochabamba, parte narrativa| N2
+    LN -->|no| S{"4 · ¿Sitio identificado?"}
+    S -->|no, o es un plato o fiesta| Z
+    S -->|datos_practicos| T2["especialista datos prácticos"] --> P1
+    S -->|como_llegar| T4["especialista movilidad: como_llegar"] --> P1
+    S -->|informacion operativa: accesibilidad| T6["buscar_sitios: solo sitios verificados"]
+    T6 -->|hay sitios| G0["agente_sitios redacta con la fecha de verificación"]
+    T6 -->|no hay| R4["No tengo ese dato verificado"]
+    S -->|informacion narrativa| N1
+    N1["N1 · buscar_en_base: sitios + eventos + documentos verificados"] --> U{"5 · ¿Similitud ≥ UMBRAL?"}
+    U -->|sí, sitio| G["agente_sitios redacta: según la verificación de..."]
+    U -->|sí, documento o evento| GD["agente_sitios / agente_saberes redacta: según la guía, página n"]
+    U -->|no| N2["N2 · buscar_en_cache: contenido_web vigente, no descartado"]
+    N2 -->|hay| GW["agente_saberes redacta: Según el sitio (información de internet)"]
+    N2 -->|no| N3["N3 · buscar_web: Tavily y, de respaldo, Wikipedia directa"]
+    N3 --> V{"¿score ≥ mínimo y menciona el tema y Cochabamba o Bolivia?"}
+    V -->|sí| GW
+    V -->|no| N4["N4 · No tengo información sobre eso, pero puedo contarte de..."]
+    SM --> N2
+    G --> SB{"¿Respuesta de N1 corta?"}
+    GD --> SB
+    SB -->|sí| OFR["¿Quieres saber más? accion_pendiente mas_informacion"]
+    SB -->|no| DA
+    G -->|falla Gemini o no hay LLM| P2["Plantilla: lee el fragmento citando la fuente"]
+    GW -->|falla Gemini o no hay LLM| P2
+    P1 --> DA{"7 · El asistente decide la acción"}
+    G0 --> DA
+    P2 --> DA
+    GW --> DA
+    OFR --> DA
+    DA -->|ninguna| OUT(["8 · Respuesta: texto + fuente + nivel_fuente + acción"])
+    DA -->|quiere ir y hay coordenadas| AC1["abrir_navegacion al terminar de hablar"]
+    DA -->|sitio o evento cercano| AC3["Ofrece: ¿Quieres que te lleve? queda pendiente"]
+    DA -->|pidió avisar o compartir| AC2["compartir: abre WhatsApp o compartir con el mensaje listo"]
+    AC1 --> OUT
+    AC2 --> OUT
+    AC3 --> OUT
+    K --> OUT
+    R1 --> OUT
+    R2 --> OUT
+    R4 --> OUT
+    R5 --> OUT
+    R6 --> OUT
+    N4 --> OUT
+    Z --> OUT

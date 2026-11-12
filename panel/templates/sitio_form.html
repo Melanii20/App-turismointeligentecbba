@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{# Campo de texto de una línea con su etiqueta y su mensaje de error #}
+{% macro campo(nombre, etiqueta, obligatorio=False, ayuda=None, tipo="text", lista=None) %}
+<p>
+  <label for="{{ nombre }}">{{ etiqueta }}{% if obligatorio %} (obligatorio){% endif %}</label>
+  {% if ayuda %}<span class="ayuda" id="ayuda-{{ nombre }}">{{ ayuda }}</span>{% endif %}
+  {% if errores.get(nombre) %}<span class="error-campo" id="error-{{ nombre }}">{{ errores[nombre] }}</span>{% endif %}
+  <input type="{{ tipo }}" id="{{ nombre }}" name="{{ nombre }}" value="{{ v.get(nombre, '') }}"
+         {% if obligatorio %}required{% endif %}
+         {% if lista %}list="{{ lista }}"{% endif %}
+         {% if errores.get(nombre) %}aria-invalid="true"{% endif %}
+         aria-describedby="{% if ayuda %}ayuda-{{ nombre }} {% endif %}{% if errores.get(nombre) %}error-{{ nombre }}{% endif %}">
+</p>
+{% endmacro %}
+
+{# Cuadro de texto de varias líneas #}
+{% macro area(nombre, etiqueta, obligatorio=False, ayuda=None) %}
+<p>
+  <label for="{{ nombre }}">{{ etiqueta }}{% if obligatorio %} (obligatorio){% endif %}</label>
+  {% if ayuda %}<span class="ayuda" id="ayuda-{{ nombre }}">{{ ayuda }}</span>{% endif %}
+  {% if errores.get(nombre) %}<span class="error-campo" id="error-{{ nombre }}">{{ errores[nombre] }}</span>{% endif %}
+  <textarea id="{{ nombre }}" name="{{ nombre }}" rows="5"
+            {% if obligatorio %}required{% endif %}
+            {% if errores.get(nombre) %}aria-invalid="true"{% endif %}
+            aria-describedby="{% if ayuda %}ayuda-{{ nombre }} {% endif %}{% if errores.get(nombre) %}error-{{ nombre }}{% endif %}">{{ v.get(nombre, '') }}</textarea>
+</p>
+{% endmacro %}
+
+{# Pregunta Sí / No / Sin verificar. "Sin verificar" (valor vacío) se guarda como NULL. #}
+{% macro tres_opciones(nombre, pregunta) %}
+{% set actual = v.get(nombre, '') %}
+<fieldset id="{{ nombre }}">
+  <legend>{{ pregunta }}</legend>
+  <label class="opcion"><input type="radio" name="{{ nombre }}" value="si" {% if actual == 'si' %}checked{% endif %}> Sí</label>
+  <label class="opcion"><input type="radio" name="{{ nombre }}" value="no" {% if actual == 'no' %}checked{% endif %}> No</label>
+  <label class="opcion"><input type="radio" name="{{ nombre }}" value="" {% if actual not in ('si', 'no') %}checked{% endif %}> Sin verificar</label>
+</fieldset>
+{% endmacro %}
+
+{% block cabecera %}
+<link rel="stylesheet" href="{{ estatico('leaflet/leaflet.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ estatico('leaflet/leaflet.js') }}"></script>
+<script src="{{ estatico('mapa.js') }}"></script>
+<script src="{{ estatico('avance.js') }}"></script>
+<script src="{{ estatico('cambios.js') }}"></script>
+{% endblock %}
+
+{% block contenido %}
+{% if errores %}
+<div class="error" role="alert">
+  <p>{% if resumen %}{{ resumen }}{% else %}No se guardó el sitio. Corrige {{ errores|length }} campo{{ 's' if errores|length > 1 }}:{% endif %}</p>
+  <ul>
+    {% for campo, mensaje in errores.items() %}
+    <li><a href="#{{ campo }}">{{ mensaje }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if es_nuevo %}
+<p>El sitio se guardará como <strong>borrador</strong>. Los datos de accesibilidad déjalos en
+  «Sin verificar» o en blanco si todavía no los comprobaste en el lugar: no se rellenan solos.</p>
+{% else %}
+<p>Estado actual: <span class="insignia insignia-{{ estado }}">{{ estado|capitalize }}</span></p>
+<p>Al guardar, el sitio queda como <strong>borrador</strong> y se vuelve a calcular su embedding.
+  {% if estado == 'verificado' %}Como estaba verificado, tendrás que verificarlo de nuevo.{% endif %}</p>
+{% endif %}
+
+<nav class="indice" aria-label="En esta página">
+  <span>Ir a:</span>
+  <a href="#datos-generales">Datos generales</a>
+  <a href="#ubicacion">Ubicación</a>
+  <a href="#accesibilidad">Accesibilidad</a>
+  {% if not es_nuevo %}<a href="#verificacion">Verificación</a>{% endif %}
+</nav>
+
+{# Avance hacia la verificación. Oculto hasta que avance.js lo muestra (sin JavaScript no se usa).
+   La lista de requisitos viene del servidor (REQUISITOS_VERIFICACION), que es quien decide al verificar. #}
+<section class="tarjeta avance" id="avance" aria-labelledby="titulo-avance" hidden>
+  <h2 id="titulo-avance">{{ icono('escudo') }} Avance hacia la verificación</h2>
+  <p>
+    <strong id="avance-texto"></strong> datos listos para poder verificar el sitio.
+    <progress id="avance-progreso" max="{{ requisitos|length }}" value="0" aria-labelledby="titulo-avance"></progress>
+  </p>
+  <p id="avance-estado" class="ayuda" role="status"></p>
+  <ul class="lista-avance">
+    {% for campo, etiqueta in requisitos %}
+    <li data-campo="{{ campo }}">
+      <a href="#{{ campo }}">{{ etiqueta }}</a>
+      <span class="listo" hidden>{{ icono('verificado') }} Listo</span>
+      <span class="falta">{{ icono('cerrar') }} Falta</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="ayuda">Es una guía con lo que ves en pantalla. Al pulsar «Verificar sitio», el sistema revisa lo que está guardado.</p>
+</section>
+
+<form method="post" action="{{ accion }}" class="formulario">
+
+  <section class="tarjeta" id="datos-generales" aria-labelledby="titulo-datos-generales">
+    <h2 id="titulo-datos-generales">{{ icono('documento') }} Datos generales</h2>
+    {{ campo("nombre", "Nombre", obligatorio=True) }}
+    {{ campo("tipo", "Tipo", obligatorio=True, ayuda="Escribe uno nuevo o elige uno ya usado.", lista="tipos-existentes") }}
+    <datalist id="tipos-existentes">
+      {% for t in tipos %}<option value="{{ t }}">{% endfor %}
+    </datalist>
+    {{ area("descripcion", "Descripción", obligatorio=True) }}
+    {{ campo("direccion", "Dirección") }}
+    {{ campo("fuente", "Fuente de la información") }}
+  </section>
+
+  <section class="tarjeta" id="informacion-general" aria-labelledby="titulo-informacion-general">
+    <h2 id="titulo-informacion-general">{{ icono('documento') }} Información para visitantes</h2>
+    <p class="ayuda">Todo es opcional y lo escribes tú. El asistente solo dirá lo que registres aquí.</p>
+    {{ area("relato", "Historia o leyenda", ayuda="Escrita o revisada por ti; no se copia de Wikipedia.") }}
+    {{ area("que_ver", "Qué ver") }}
+    <div class="fila-doble">
+      {{ campo("horario", "Horario", ayuda="Ejemplo: Lunes a viernes, 9:00 a 17:00.") }}
+      {{ campo("costo_ingreso", "Costo de ingreso", ayuda="Ejemplo: Gratis, o Bs 10.") }}
+    </div>
+    {{ campo("duracion_visita", "Duración de la visita", ayuda="Ejemplo: 1 hora.") }}
+    {{ area("servicios", "Servicios", ayuda="Baños, tiendas, guías, etc.") }}
+  </section>
+
+  <section class="tarjeta" id="ubicacion" aria-labelledby="titulo-ubicacion">
+    <h2 id="titulo-ubicacion">{{ icono('pin') }} Ubicación</h2>
+    <p class="ayuda">Escribe las coordenadas del sitio o márcalas en el mapa. Son opcionales.</p>
+    <div class="fila-doble">
+      {{ campo("latitud", "Latitud", ayuda="Entre -90 y 90. Ejemplo: -17.393800.", tipo="text") }}
+      {{ campo("longitud", "Longitud", ayuda="Entre -180 y 180. Ejemplo: -66.156900.", tipo="text") }}
+    </div>
+
+    {# El bloque del mapa está oculto; mapa.js lo muestra. Sin JavaScript el formulario sigue igual. #}
+    <div id="bloque-mapa" class="mapa-bloque" hidden>
+      <p class="ayuda" id="ayuda-mapa">
+        El mapa es una ayuda opcional. Haz clic para marcar el sitio y arrastra el marcador para ajustarlo.
+        Con teclado: mueve el mapa con las flechas, pulsa «Marcar el centro del mapa» y ajusta el marcador con las flechas
+        (Mayús para moverlo más rápido). También puedes escribir las coordenadas arriba.
+      </p>
+      <div class="mapa-botones">
+        <button type="button" class="secundario" id="mapa-mi-ubicacion">{{ icono('objetivo') }} Usar mi ubicación actual</button>
+        <button type="button" class="secundario" id="mapa-marcar-centro">{{ icono('pin') }} Marcar el centro del mapa</button>
+        <button type="button" class="secundario" id="mapa-quitar">{{ icono('cerrar') }} Quitar ubicación</button>
+      </div>
+      <div id="mapa" role="group" aria-label="Mapa para marcar la ubicación del sitio"
+           aria-describedby="ayuda-mapa" data-imagenes="/static/leaflet/images/"></div>
+      <p id="estado-mapa" class="ayuda" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="tarjeta" id="accesibilidad" aria-labelledby="titulo-accesibilidad">
+    <h2 id="titulo-accesibilidad">{{ icono('persona') }} Accesibilidad</h2>
+    <p class="ayuda">Solo datos que la administradora comprobó. Lo que no se verificó se deja en «Sin verificar» o en blanco.</p>
+    {{ area("acceso_descripcion_sensorial", "Descripción sensorial", ayuda="Sonidos, olores, texturas y sensaciones que se perciben en el lugar.") }}
+    {{ area("acceso_punto_referencia_entrada", "Punto de referencia de la entrada", ayuda="Cómo reconocer la entrada sin ver.") }}
+    {{ campo("acceso_tipo_piso", "Tipo de piso", ayuda="Ejemplo: empedrado, cemento, madera.") }}
+    {{ tres_opciones("acceso_piso_tactil", "¿Tiene piso táctil?") }}
+    {{ tres_opciones("acceso_senalizacion_braille", "¿Tiene señalización en braille?") }}
+    {{ tres_opciones("acceso_permite_perros_guia", "¿Permite perros guía?") }}
+
+    {% set ruido = v.get('acceso_nivel_ruido', '') %}
+    <p>
+      <label for="acceso_nivel_ruido">Nivel de ruido habitual</label>
+      {% if errores.get('acceso_nivel_ruido') %}<span class="error-campo" id="error-acceso_nivel_ruido">{{ errores['acceso_nivel_ruido'] }}</span>{% endif %}
+      <select id="acceso_nivel_ruido" name="acceso_nivel_ruido">
+        <option value="" {% if not ruido %}selected{% endif %}>Sin verificar</option>
+        <option value="bajo" {% if ruido == 'bajo' %}selected{% endif %}>Bajo</option>
+        <option value="medio" {% if ruido == 'medio' %}selected{% endif %}>Medio</option>
+        <option value="alto" {% if ruido == 'alto' %}selected{% endif %}>Alto</option>
+      </select>
+    </p>
+    {{ area("acceso_recomendacion", "Recomendación de acceso", ayuda="Consejos para llegar y moverse en el lugar.") }}
+  </section>
+
+  {# Barra de guardado: queda pegada abajo mientras se recorre el formulario #}
+  <div class="acciones" role="group" aria-label="Guardar el sitio">
+    <button type="submit">{{ icono('guardar') }} {{ boton }}</button>
+    <a class="boton secundario" href="/sitios">{{ icono('cerrar') }} Cancelar</a>
+    <span class="resumen-barra" id="avance-barra-texto" aria-hidden="true" hidden></span>
+  </div>
+</form>
+
+{% if not es_nuevo %}
+<section class="tarjeta verificacion" id="verificacion" aria-labelledby="titulo-verificar">
+  <h2 id="titulo-verificar">{{ icono('escudo') }} Verificación</h2>
+  {% if estado == 'verificado' %}
+  <p>Este sitio está <strong>verificado</strong>{% if verificacion %}
+    por {{ verificacion.nombre or 'un usuario eliminado' }}{% if verificacion.fecha %} el {{ verificacion.fecha }}{% endif %}{% endif %}.
+    Si guardas cambios, volverá a borrador.</p>
+  {% else %}
+  <p>Verificar significa que ya comprobaste en el lugar los datos de accesibilidad. Solo los sitios
+    verificados los ve el asistente. Se verifica lo que está <strong>guardado</strong>:
+    si cambiaste algo en el formulario, primero pulsa «Guardar cambios».</p>
+  <form method="post" action="/sitios/{{ sitio_id }}/verificar">
+    <button type="submit">{{ icono('escudo') }} Verificar sitio</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}

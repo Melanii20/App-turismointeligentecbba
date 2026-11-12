@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% macro campo(nombre, etiqueta, obligatorio=False, ayuda=None, tipo="text") %}
+<p>
+  <label for="{{ nombre }}">{{ etiqueta }}{% if obligatorio %} (obligatorio){% endif %}</label>
+  {% if ayuda %}<span class="ayuda" id="ayuda-{{ nombre }}">{{ ayuda }}</span>{% endif %}
+  {% if errores.get(nombre) %}<span class="error-campo" id="error-{{ nombre }}">{{ errores[nombre] }}</span>{% endif %}
+  <input type="{{ tipo }}" id="{{ nombre }}" name="{{ nombre }}" value="{{ v.get(nombre) or '' }}"
+         {% if obligatorio %}required{% endif %}
+         {% if errores.get(nombre) %}aria-invalid="true"{% endif %}
+         aria-describedby="{% if ayuda %}ayuda-{{ nombre }} {% endif %}{% if errores.get(nombre) %}error-{{ nombre }}{% endif %}">
+</p>
+{% endmacro %}
+
+{% block contenido %}
+{% if errores %}
+<div class="error" role="alert">
+  <p>No se guardó el documento. Corrige {{ errores|length }} campo{{ 's' if errores|length > 1 }}:</p>
+  <ul>
+    {% for campo, mensaje in errores.items() %}
+    <li><a href="#{{ campo }}">{{ mensaje }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% if documento_id and estado == 'verificado' %}
+<p class="aviso" role="status">Este documento está verificado. Si lo guardas, vuelve a borrador y habrá que verificarlo otra vez.</p>
+{% endif %}
+
+<form method="post" action="{{ accion }}" enctype="multipart/form-data" class="formulario">
+  <section class="tarjeta" aria-labelledby="titulo-datos-doc">
+    <h2 id="titulo-datos-doc">{{ icono('documento') }} Datos del documento</h2>
+    {{ campo("titulo", "Título", obligatorio=True) }}
+    {{ campo("institucion_autor", "Institución o autor") }}
+
+    <div class="fila-doble">
+      <p>
+        <label for="tipo">Tipo (obligatorio)</label>
+        {% if errores.get('tipo') %}<span class="error-campo" id="error-tipo">{{ errores['tipo'] }}</span>{% endif %}
+        <select id="tipo" name="tipo" required>
+          {% for t in tipos %}<option value="{{ t }}" {% if v.get('tipo') == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
+      </p>
+      <p>
+        <label for="tema">Tema</label>
+        {% if errores.get('tema') %}<span class="error-campo" id="error-tema">{{ errores['tema'] }}</span>{% endif %}
+        <select id="tema" name="tema">
+          <option value="">Sin tema</option>
+          {% for t in temas %}<option value="{{ t }}" {% if v.get('tema') == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
+      </p>
+    </div>
+
+    {{ campo("anio", "Año de publicación", ayuda="Opcional. Ejemplo: 2019.", tipo="number") }}
+    {{ campo("url_origen", "URL de origen", ayuda="Solo si el documento viene de internet.") }}
+
+    <p>
+      <label for="permiso_uso">Permiso de uso (obligatorio)</label>
+      <span class="ayuda" id="ayuda-permiso_uso">Con qué permiso o licencia puedes usar este documento. Ejemplo: «Autorización de la Secretaría de Turismo» o «Licencia CC BY 4.0».</span>
+      {% if errores.get('permiso_uso') %}<span class="error-campo" id="error-permiso_uso">{{ errores['permiso_uso'] }}</span>{% endif %}
+      <textarea id="permiso_uso" name="permiso_uso" rows="3" required
+                {% if errores.get('permiso_uso') %}aria-invalid="true"{% endif %}
+                aria-describedby="ayuda-permiso_uso {% if errores.get('permiso_uso') %}error-permiso_uso{% endif %}">{{ v.get('permiso_uso') or '' }}</textarea>
+    </p>
+
+    <p>
+      <label for="archivo">Archivo (PDF, DOCX o TXT){% if not documento_id %} (obligatorio){% endif %}</label>
+      <span class="ayuda" id="ayuda-archivo">{% if documento_id %}Déjalo vacío para conservar el actual. Si subes uno nuevo, se regeneran los fragmentos. {% endif %}Un PDF escaneado como imagen no sirve: debe tener texto. Máximo 15 MB.</span>
+      {% if errores.get('archivo') %}<span class="error-campo" id="error-archivo">{{ errores['archivo'] }}</span>{% endif %}
+      <input type="file" id="archivo" name="archivo" accept=".pdf,.docx,.txt"
+             {% if not documento_id %}required{% endif %}
+             {% if errores.get('archivo') %}aria-invalid="true"{% endif %}
+             aria-describedby="ayuda-archivo {% if errores.get('archivo') %}error-archivo{% endif %}">
+    </p>
+  </section>
+
+  <div class="acciones" role="group" aria-label="Guardar el documento">
+    <button type="submit">{{ icono('guardar') }} {{ boton }}</button>
+    <a class="boton secundario" href="{% if documento_id %}/documentos/{{ documento_id }}{% else %}/documentos{% endif %}">{{ icono('cerrar') }} Cancelar</a>
+  </div>
+</form>
+{% endblock %}

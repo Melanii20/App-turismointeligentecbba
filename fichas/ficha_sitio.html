@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ficha de sitio turístico</title>
+  <style>
+    /* Ficha para llenar en el lugar: se puede imprimir (Ctrl+P) o llenar en pantalla.
+       No guarda nada: es solo una guía de captura, igual que el formulario del panel. */
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, "Segoe UI", Arial, sans-serif; font-size: 1.05rem; line-height: 1.5;
+           color: #111; background: #fff; max-width: 52rem; margin: 0 auto; padding: 1rem 1.25rem 3rem; }
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; padding-bottom: 0.2rem; border-bottom: 2px solid #111; }
+    h2 small { font-weight: 400; font-size: 0.9rem; }
+    .regla { border: 2px solid #111; padding: 0.6rem 0.9rem; margin: 0.75rem 0; }
+    .regla p { margin: 0.25rem 0; }
+    .campo { margin: 0.9rem 0; break-inside: avoid; }
+    label, legend { font-weight: 700; }
+    .guia { display: block; font-size: 0.92rem; color: #333; font-weight: 400; margin: 0.1rem 0 0.25rem; }
+    input[type="text"], textarea { width: 100%; font: inherit; padding: 0.4rem 0.5rem; border: 2px solid #444; border-radius: 4px; background: #fff; color: #111; }
+    textarea { min-height: 6.5rem; resize: vertical; }
+    fieldset { border: 2px solid #444; border-radius: 4px; margin: 0.9rem 0; padding: 0.4rem 0.8rem 0.6rem; break-inside: avoid; }
+    .opcion { display: inline-block; margin-right: 1.5rem; font-weight: 400; }
+    input[type="radio"] { width: 1.1rem; height: 1.1rem; margin-right: 0.3rem; vertical-align: middle; }
+    .fila { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
+    ol, ul { margin: 0.3rem 0 0.3rem 1.2rem; padding: 0; }
+    .solo-pantalla { color: #333; }
+    :focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+    @media (max-width: 36rem) { .fila { grid-template-columns: 1fr; } .opcion { display: block; } }
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { padding: 0; font-size: 10.5pt; max-width: none; }
+      .solo-pantalla { display: none; }
+      h2 { break-after: avoid; }
+      textarea { min-height: 4.5rem; resize: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Ficha de sitio turístico</h1>
+  <p class="solo-pantalla">Puedes llenarla en pantalla o imprimirla (Ctrl+P). No se guarda sola: al terminar,
+    pasa los datos al panel con «Nuevo sitio».</p>
+
+  <div class="regla">
+    <p><strong>Regla de oro:</strong> anota solo lo que <strong>comprobaste tú</strong> en el lugar.</p>
+    <p>Si no pudiste comprobar algo, marca «Sin verificar» o déjalo en blanco. No lo adivines ni lo copies de
+      internet: un dato de accesibilidad equivocado puede perjudicar a quien confía en el asistente.</p>
+    <p>Un sitio solo se puede <em>verificar</em> en el panel cuando tiene los 7 datos marcados con ★ en la
+      sección de accesibilidad.</p>
+  </div>
+
+  <h2>Datos de la visita <small>(son para tu control; no se cargan al panel)</small></h2>
+  <div class="fila">
+    <div class="campo">
+      <label for="visita_fecha">Fecha de la visita</label>
+      <input type="text" id="visita_fecha" name="visita_fecha">
+    </div>
+    <div class="campo">
+      <label for="visita_persona">Quién comprobó los datos</label>
+      <input type="text" id="visita_persona" name="visita_persona">
+    </div>
+  </div>
+
+  <h2>1. Datos generales</h2>
+  <div class="campo">
+    <label for="nombre">Nombre del sitio (obligatorio)</label>
+    <input type="text" id="nombre" name="nombre">
+  </div>
+  <div class="campo">
+    <label for="tipo">Tipo (obligatorio)</label>
+    <span class="guia">Qué clase de lugar es. Si ya hay sitios cargados, usa los mismos nombres de tipo para mantener el orden.</span>
+    <input type="text" id="tipo" name="tipo">
+  </div>
+  <div class="campo">
+    <label for="descripcion">Descripción (obligatoria)</label>
+    <span class="guia">Qué es el lugar, su historia y por qué es importante, con tus palabras o de una fuente que puedas citar.</span>
+    <textarea id="descripcion" name="descripcion"></textarea>
+  </div>
+  <div class="campo">
+    <label for="direccion">Dirección</label>
+    <input type="text" id="direccion" name="direccion">
+  </div>
+  <div class="campo">
+    <label for="fuente">Fuente de la información</label>
+    <span class="guia">De dónde sacaste la descripción: libro, página, persona o «observación propia».</span>
+    <input type="text" id="fuente" name="fuente">
+  </div>
+
+  <h2>2. Ubicación <small>(opcional)</small></h2>
+  <p class="guia">Lo más fácil: estando en la puerta del lugar, abre el panel en el celular y usa «Usar mi ubicación actual».
+    Si no, anota las coordenadas de la aplicación de mapas de tu teléfono.</p>
+  <div class="fila">
+    <div class="campo">
+      <label for="latitud">Latitud</label>
+      <span class="guia">Entre -90 y 90.</span>
+      <input type="text" id="latitud" name="latitud">
+    </div>
+    <div class="campo">
+      <label for="longitud">Longitud</label>
+      <span class="guia">Entre -180 y 180.</span>
+      <input type="text" id="longitud" name="longitud">
+    </div>
+  </div>
+
+  <h2>3. Accesibilidad <small>(★ = necesario para poder verificar el sitio)</small></h2>
+
+  <div class="campo">
+    <label for="acceso_descripcion_sensorial">★ Descripción sensorial</label>
+    <span class="guia">Lo que se percibe sin ver. Piensa en: ¿qué sonidos se oyen (voces, tráfico, música, eco)?
+      ¿qué olores hay? ¿qué se siente al tocar paredes, puertas o pasamanos? ¿hace frío, calor o hay corrientes de aire?
+      ¿es amplio o estrecho?</span>
+    <textarea id="acceso_descripcion_sensorial" name="acceso_descripcion_sensorial"></textarea>
+  </div>
+
+  <div class="campo">
+    <label for="acceso_punto_referencia_entrada">★ Punto de referencia de la entrada</label>
+    <span class="guia">Cómo reconocer la entrada sin ver. Piensa en: ¿qué hay justo al lado (una pared, una reja, un puesto)?
+      ¿hay escalones, rampa o desnivel? ¿cómo es la puerta y hacia dónde abre? ¿qué se oye o se siente en ese punto?</span>
+    <textarea id="acceso_punto_referencia_entrada" name="acceso_punto_referencia_entrada"></textarea>
+  </div>
+
+  <div class="campo">
+    <label for="acceso_tipo_piso">★ Tipo de piso</label>
+    <span class="guia">El material del piso por donde se camina dentro del sitio. Si cambia, anota los cambios.</span>
+    <input type="text" id="acceso_tipo_piso" name="acceso_tipo_piso">
+  </div>
+
+  <fieldset>
+    <legend>★ ¿Tiene piso táctil?</legend>
+    <label class="opcion"><input type="radio" name="acceso_piso_tactil" value="si"> Sí</label>
+    <label class="opcion"><input type="radio" name="acceso_piso_tactil" value="no"> No</label>
+    <label class="opcion"><input type="radio" name="acceso_piso_tactil" value=""> Sin verificar</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>★ ¿Tiene señalización en braille?</legend>
+    <label class="opcion"><input type="radio" name="acceso_senalizacion_braille" value="si"> Sí</label>
+    <label class="opcion"><input type="radio" name="acceso_senalizacion_braille" value="no"> No</label>
+    <label class="opcion"><input type="radio" name="acceso_senalizacion_braille" value=""> Sin verificar</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>★ ¿Permite el ingreso de perros guía?</legend>
+    <span class="guia">Marca «Sí» o «No» solo si lo confirmaste con el personal o con un aviso del lugar.</span>
+    <label class="opcion"><input type="radio" name="acceso_permite_perros_guia" value="si"> Sí</label>
+    <label class="opcion"><input type="radio" name="acceso_permite_perros_guia" value="no"> No</label>
+    <label class="opcion"><input type="radio" name="acceso_permite_perros_guia" value=""> Sin verificar</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>★ Nivel de ruido habitual</legend>
+    <span class="guia">Si puedes, fíjate en más de un momento del día y anota cuándo lo mediste en «Recomendación».</span>
+    <label class="opcion"><input type="radio" name="acceso_nivel_ruido" value="bajo"> Bajo</label>
+    <label class="opcion"><input type="radio" name="acceso_nivel_ruido" value="medio"> Medio</label>
+    <label class="opcion"><input type="radio" name="acceso_nivel_ruido" value="alto"> Alto</label>
+    <label class="opcion"><input type="radio" name="acceso_nivel_ruido" value=""> Sin verificar</label>
+  </fieldset>
+
+  <div class="campo">
+    <label for="acceso_recomendacion">Recomendación de acceso <small>(opcional)</small></label>
+    <span class="guia">Consejos prácticos para llegar y moverse: mejor horario, por dónde entrar, si conviene ir acompañado,
+      tramos difíciles.</span>
+    <textarea id="acceso_recomendacion" name="acceso_recomendacion"></textarea>
+  </div>
+
+  <h2>Antes de irte del lugar</h2>
+  <ul>
+    <li>¿Marcaste los 7 datos con ★? Si alguno quedó «Sin verificar», el sitio se guardará como borrador y no se podrá verificar todavía.</li>
+    <li>¿Anotaste la fuente de la descripción?</li>
+    <li>¿Tomaste la ubicación (coordenadas)?</li>
+  </ul>
+</body>
+</html>

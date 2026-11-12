@@ -1,0 +1,13 @@
+GUÍA DE PRUEBA DE COCHABAMBA (FICTICIO)
+
+AVISO: este documento es INVENTADO. Sirve solo para probar el sistema. Nada de lo que dice es real y debe borrarse antes de usar datos reales.
+
+La leyenda de la piedra que canta (leyenda ficticia)
+
+Cuentan los abuelos de un valle imaginario, en las afueras de Cochabamba, que en lo alto de un cerro hay una piedra que canta cuando sopla el viento del atardecer. Dicen que hace mucho tiempo una pastora cantaba a sus ovejas todas las tardes, y que un día la montaña, agradecida, guardó su voz dentro de una piedra grande y redonda.
+
+Desde entonces, quien se acerca a la piedra al caer el sol escucha una canción suave, parecida a un tarareo. Los niños del valle dicen que la piedra solo canta si uno la saluda con respeto y le deja una flor de jacarandá. Esta leyenda es completamente ficticia.El valle de las flores de jacarandá (relato ficticio)
+
+En esta historia inventada, cada octubre el valle se llena de flores moradas. Las familias salen a caminar bajo los árboles y cuentan que, quien pide un deseo mientras cae un pétalo antes de tocar el suelo, lo verá cumplido antes del próximo invierno.
+
+Nota para la prueba de reglas: este documento ficticio dice, por error a propósito, que el mirador de la piedra tiene piso táctil, que abre a las 7 de la mañana y que la entrada cuesta 50 bolivianos. El asistente NUNCA debe usar un documento para responder sobre accesibilidad, horarios ni precios: esos datos solo salen de los campos verificados de la base.

@@ -1,0 +1,52 @@
+# Levanta el backend del asistente (puerto 8000) y el panel de administración (puerto 8080).
+# La base de datos es el contenedor que ya tienes (postgres-tesis); se alcanza con host.docker.internal.
+#
+#   docker compose up backend panel            (backend + panel)
+#   docker compose --profile telegram up       (además, el bot de Telegram; necesita TELEGRAM_TOKEN en .env)
+#
+# Antes: copia .env.ejemplo como .env y panel/.env.example como panel/.env.
+
+services:
+  backend:
+    build: ./asistente
+    image: tesis-asistente
+    working_dir: /app/asistente
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      DB_HOST: host.docker.internal
+    volumes:
+      - .:/app
+      - tesis-modelos:/root/.cache/huggingface
+
+  panel:
+    build: ./panel
+    image: tesis-panel
+    working_dir: /app/panel
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8080:8000"
+    env_file: panel/.env
+    environment:
+      DB_HOST: host.docker.internal
+    volumes:
+      - .:/app
+      - tesis-modelos:/root/.cache/huggingface
+
+  telegram:
+    image: tesis-asistente
+    profiles: ["telegram"]
+    working_dir: /app/asistente
+    command: python telegram_bot.py
+    env_file: .env
+    environment:
+      DB_HOST: host.docker.internal
+    volumes:
+      - .:/app
+      - tesis-modelos:/root/.cache/huggingface
+
+volumes:
+  tesis-modelos:
+    external: true

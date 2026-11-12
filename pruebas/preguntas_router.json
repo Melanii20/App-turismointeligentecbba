@@ -1,0 +1,361 @@
+{
+  "descripcion": "Preguntas fijas con la intención que debe decidir el router por reglas. 'con_pendiente': true simula que hay una acción pendiente en el contexto.",
+  "sitios_verificados": [
+    [
+      16,
+      "Plaza 14 de Septiembre"
+    ],
+    [
+      17,
+      "Catedral Metropolitana"
+    ],
+    [
+      18,
+      "Palacio Portales"
+    ],
+    [
+      19,
+      "Museo Arqueológico"
+    ],
+    [
+      20,
+      "Teatro Achá"
+    ],
+    [
+      21,
+      "Mercado 25 de Mayo"
+    ],
+    [
+      22,
+      "Parque Fidel Anze"
+    ],
+    [
+      23,
+      "Plaza Colón"
+    ],
+    [
+      27,
+      "Casona Santiváñez"
+    ],
+    [
+      29,
+      "Laguna Alalay"
+    ]
+  ],
+  "casos": [
+    {
+      "pregunta": "Sí",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "Dale",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "Claro",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "No",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "Mejor no",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "Bueno",
+      "intencion": "confirmacion",
+      "con_pendiente": true
+    },
+    {
+      "pregunta": "¿Qué puedes hacer?",
+      "intencion": "ayuda"
+    },
+    {
+      "pregunta": "Ayuda",
+      "intencion": "ayuda"
+    },
+    {
+      "pregunta": "¿Cómo funciona esto?",
+      "intencion": "ayuda"
+    },
+    {
+      "pregunta": "¿Qué puedo preguntar?",
+      "intencion": "ayuda"
+    },
+    {
+      "pregunta": "¿Para qué sirves?",
+      "intencion": "ayuda"
+    },
+    {
+      "pregunta": "Avisa a mi familia",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "Comparte mi recorrido",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "Dile a mi familiar dónde estoy",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "Envía a mi mamá el lugar al que voy",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "Avísale a mi papá que llegué",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "Mándale mi ubicación a mi familia",
+      "intencion": "compartir"
+    },
+    {
+      "pregunta": "¿Cómo llego a la Catedral?",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "Llévame a la Plaza Colón",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "¿Dónde queda el Mercado 25 de Mayo?",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "Quiero ir al Palacio Portales",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "¿Cómo se llega a la Laguna Alalay?",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "¿Dónde está la entrada del Museo Arqueológico?",
+      "intencion": "como_llegar"
+    },
+    {
+      "pregunta": "Arma un recorrido",
+      "intencion": "itinerario"
+    },
+    {
+      "pregunta": "¿Qué puedo visitar hoy?",
+      "intencion": "itinerario"
+    },
+    {
+      "pregunta": "Dame un plan para hoy",
+      "intencion": "itinerario"
+    },
+    {
+      "pregunta": "Quiero un itinerario",
+      "intencion": "itinerario"
+    },
+    {
+      "pregunta": "Ármame un recorrido por el centro",
+      "intencion": "itinerario"
+    },
+    {
+      "pregunta": "¿Qué hay hoy?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Hay alguna feria este fin de semana?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Cuándo es la fiesta de Urkupiña?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Hay algún evento mañana?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Qué festividades hay este mes?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Hoy hay feriado?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿A qué hora abre el Museo Arqueológico?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Cuánto cuesta entrar al Palacio Portales?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Cuánto tiempo toma visitar la Catedral?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Hay baños en el Parque Fidel Anze?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Cuál es el horario del Teatro Achá?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Cuánto cuesta la entrada al Museo Arqueológico?",
+      "intencion": "datos_practicos"
+    },
+    {
+      "pregunta": "¿Qué hay cerca de mí?",
+      "intencion": "cercania"
+    },
+    {
+      "pregunta": "Lugares por aquí",
+      "intencion": "cercania"
+    },
+    {
+      "pregunta": "¿Qué sitios hay alrededor?",
+      "intencion": "cercania"
+    },
+    {
+      "pregunta": "Algo cercano para visitar",
+      "intencion": "cercania"
+    },
+    {
+      "pregunta": "¿Qué hay cerca?",
+      "intencion": "cercania"
+    },
+    {
+      "pregunta": "¿Cuál es la leyenda del Tunari?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué tradiciones tiene Cochabamba?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué es el silpancho?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué danzas típicas hay?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿De dónde viene la fiesta de Urkupiña?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "Háblame de las heroínas de la Coronilla",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué comida típica hay en Cochabamba?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "Cuéntame sobre la Catedral Metropolitana",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "¿Qué lugar tiene piso táctil?",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "¿Cómo es el ambiente en el Mercado 25 de Mayo?",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "¿Qué museos hay?",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "Recomiéndame un lugar tranquilo",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "¿Qué se escucha en la Plaza 14 de Septiembre?",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "Cuéntame la leyenda de la Casona Santiváñez",
+      "intencion": "informacion"
+    },
+    {
+      "pregunta": "¿Quién ganó el partido de fútbol?",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "¿A cuánto está el dólar?",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "Dame una receta de pizza",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "¿Cuál es el pronóstico del clima?",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "¿Quién será el próximo presidente?",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "Cuéntame un chiste",
+      "intencion": "fuera_de_alcance"
+    },
+    {
+      "pregunta": "Cuéntame más",
+      "intencion": "mas_informacion"
+    },
+    {
+      "pregunta": "Quiero saber más",
+      "intencion": "mas_informacion"
+    },
+    {
+      "pregunta": "Dime más sobre eso",
+      "intencion": "mas_informacion"
+    },
+    {
+      "pregunta": "¿Hay más información?",
+      "intencion": "mas_informacion"
+    },
+    {
+      "pregunta": "Cuéntame algo más",
+      "intencion": "mas_informacion"
+    },
+    {
+      "pregunta": "¿Cómo se dice gracias en quechua?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué es el pique macho?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué artesanías hay en Cochabamba?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Cómo es la vestimenta de la pollera?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Qué bebidas típicas hay?",
+      "intencion": "saberes"
+    },
+    {
+      "pregunta": "¿Cuándo es Urkupiña?",
+      "intencion": "eventos"
+    },
+    {
+      "pregunta": "¿Cuándo es la entrada folklórica?",
+      "intencion": "eventos"
+    }
+  ]
+}

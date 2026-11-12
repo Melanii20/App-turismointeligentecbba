@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% block contenido %}
+{% if mensaje %}
+<p class="exito" role="status">{{ mensaje }}</p>
+{% endif %}
+
+<nav class="resumen" aria-label="Filtrar contenido por estado de revisión">
+  <a class="tarjeta-resumen{% if not filtro %} activo{% endif %}" href="/contenido-web"{% if not filtro %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.total }}</span>
+    <span class="etiqueta">{{ icono('lista') }} Todo</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'pendiente' %} activo{% endif %}" href="/contenido-web?estado=pendiente"{% if filtro == 'pendiente' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.pendiente }}</span>
+    <span class="etiqueta">{{ icono('borrador') }} Pendiente</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'convertido' %} activo{% endif %}" href="/contenido-web?estado=convertido"{% if filtro == 'convertido' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.convertido }}</span>
+    <span class="etiqueta">{{ icono('verificado') }} Convertido</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'descartado' %} activo{% endif %}" href="/contenido-web?estado=descartado"{% if filtro == 'descartado' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.descartado }}</span>
+    <span class="etiqueta">{{ icono('cerrar') }} Descartado</span>
+  </a>
+</nav>
+
+<p class="ayuda">Lo que el asistente trajo de internet (solo temas de cultura, y solo cuando su base no tenía la respuesta). Un contenido que conviertes en documento y verificas pasa a ser parte de la base; uno que descartas no se vuelve a usar.</p>
+
+{% if filas %}
+<div class="tabla-contenedor" role="region" aria-label="Tabla de contenido traído de internet" tabindex="0">
+  <table>
+    <caption>Contenido traído de internet ({{ filas|length }})</caption>
+    <thead>
+      <tr>
+        <th scope="col">Título</th>
+        <th scope="col">Dominio</th>
+        <th scope="col">URL</th>
+        <th scope="col">Tema</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in filas %}
+      <tr>
+        <th scope="row">{{ f.titulo }}</th>
+        <td>{{ f.dominio or '—' }}</td>
+        <td><a href="{{ f.url }}" rel="noopener noreferrer" target="_blank">{{ f.url }}<span class="solo-lectores"> (se abre en otra pestaña)</span></a></td>
+        <td>{{ f.tema }}</td>
+        <td>{{ f.fecha.strftime('%d/%m/%Y') }}</td>
+        <td>{{ f.estado_revision }}</td>
+        <td>
+          {% if f.estado_revision == 'pendiente' %}
+          <form method="post" action="/contenido-web/{{ f.id }}/convertir" class="en-linea">
+            <button type="submit">{{ icono('documento') }} Convertir en documento<span class="solo-lectores"> {{ f.titulo }}</span></button>
+          </form>
+          <form method="post" action="/contenido-web/{{ f.id }}/descartar" class="en-linea">
+            <button type="submit" class="secundario">{{ icono('cerrar') }} Descartar<span class="solo-lectores"> {{ f.titulo }}</span></button>
+          </form>
+          {% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="tarjeta vacio" role="status">
+  <p><strong>No hay contenido de internet guardado.</strong></p>
+  <p>Aparecerá aquí cuando el asistente consulte la web para una pregunta de cultura.</p>
+</div>
+{% endif %}
+{% endblock %}

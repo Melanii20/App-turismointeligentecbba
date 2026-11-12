@@ -1,0 +1,26 @@
+# Entorno virtual de Python (no se sube, se puede recrear)
+venv/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Contraseñas y configuración privada
+.env
+panel/.env
+# Configuración personal de Claude Code
+.claude/settings.local.json
+inicio.txt
+
+# Respaldos de la base
+respaldo_*.sql
+
+
+# Archivos subidos al panel (pueden tener derechos de autor)
+documentos_subidos/
+
+# Archivos de trabajo local (no se suben)
+CLAUDE.md
+.claude/
+CLAUDE_anterior.md
+~$*

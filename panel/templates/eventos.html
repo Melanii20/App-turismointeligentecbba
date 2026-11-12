@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_iconos.html" import icono %}
+
+{% block contenido %}
+{% if mensaje %}
+<p class="exito" role="status">{{ mensaje }}</p>
+{% endif %}
+
+{# Resumen: cada tarjeta es también un filtro por fecha #}
+<nav class="resumen" aria-label="Filtrar eventos por fecha">
+  <a class="tarjeta-resumen{% if filtro == 'proximos' %} activo{% endif %}" href="/eventos"{% if filtro == 'proximos' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.proximos }}</span>
+    <span class="etiqueta">{{ icono('calendario') }} Próximos</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'pasados' %} activo{% endif %}" href="/eventos?cuando=pasados"{% if filtro == 'pasados' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.pasados }}</span>
+    <span class="etiqueta">{{ icono('borrador') }} Pasados</span>
+  </a>
+  <a class="tarjeta-resumen{% if filtro == 'todos' %} activo{% endif %}" href="/eventos?cuando=todos"{% if filtro == 'todos' %} aria-current="true"{% endif %}>
+    <span class="numero">{{ conteos.todos }}</span>
+    <span class="etiqueta">{{ icono('lista') }} Todos</span>
+  </a>
+</nav>
+
+<div class="barra-lista">
+  <p class="ayuda">Ferias, festividades y feriados del calendario. Se ordenan por fecha de inicio.</p>
+  <a class="boton" href="/eventos/nuevo">{{ icono('mas') }} Nuevo evento</a>
+</div>
+
+{% if eventos %}
+<div class="tabla-contenedor" role="region" aria-label="Tabla de eventos" tabindex="0">
+  <table>
+    <caption>
+      {% if filtro == 'proximos' %}Eventos próximos ({{ eventos|length }}){% elif filtro == 'pasados' %}Eventos pasados ({{ eventos|length }}){% else %}Todos los eventos ({{ eventos|length }}){% endif %}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Fechas</th>
+        <th scope="col">Zona</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for evento in eventos %}
+      <tr>
+        <th scope="row">{{ evento.nombre }}</th>
+        <td>{{ evento.tipo|capitalize if evento.tipo else '—' }}</td>
+        <td>{{ evento.fechas }}{% if evento.paso and filtro == 'todos' %} <span class="ayuda">(ya pasó)</span>{% endif %}</td>
+        <td>{{ evento.zona or '—' }}</td>
+        <td>
+          <a class="enlace-icono" href="/eventos/{{ evento.id }}/editar">
+            {{ icono('editar') }} Editar<span class="solo-lectores"> {{ evento.nombre }}</span>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="tarjeta vacio" role="status">
+  {% if filtro == 'proximos' %}
+  <p><strong>No hay eventos próximos.</strong></p>
+  <p>Agrega uno con «Nuevo evento» o mira los <a href="/eventos?cuando=todos">eventos de todas las fechas</a>.</p>
+  {% elif filtro == 'pasados' %}
+  <p><strong>No hay eventos pasados.</strong></p>
+  {% else %}
+  <p><strong>Todavía no hay eventos registrados.</strong></p>
+  <p>Empieza con «Nuevo evento».</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
